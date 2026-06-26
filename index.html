@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💗 Un regalo para vos</title>
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><text y="52" font-size="52">💗</text></svg>'>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink: #ff4fa3;
+      --hot-pink: #ff1f8f;
+      --soft-pink: #ffd6ec;
+      --rose: #ff80bd;
+      --ink: #361527;
+      --white: #fff8fc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "Nunito", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.85), transparent 18%),
+        radial-gradient(circle at 82% 14%, rgba(255, 183, 218, 0.85), transparent 20%),
+        linear-gradient(135deg, #ffe2f2 0%, #ffb8dd 46%, #ff8ac7 100%);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: clamp(20px, 5vw, 64px);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.025);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .heart-field,
+    .sparkle-field {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .heart,
+    .sparkle {
+      position: absolute;
+      line-height: 1;
+      opacity: 0.8;
+      text-shadow: 0 8px 20px rgba(255, 31, 143, 0.22);
+    }
+
+    .heart {
+      font-size: clamp(18px, 2.4vw, 34px);
+    }
+
+    .sparkle {
+      color: #ff3aa6;
+      font-size: clamp(16px, 2vw, 28px);
+      filter: drop-shadow(0 0 8px rgba(255, 81, 179, 0.75));
+    }
+
+    .intro-content {
+      position: relative;
+      z-index: 2;
+      width: min(920px, 100%);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 auto 34px;
+      max-width: 860px;
+      color: #941354;
+      font-family: "Pacifico", cursive;
+      font-size: clamp(2.25rem, 7vw, 5.4rem);
+      font-weight: 400;
+      line-height: 1.17;
+      text-shadow:
+        0 4px 0 rgba(255, 255, 255, 0.72),
+        0 18px 36px rgba(173, 14, 88, 0.2);
+    }
+
+    .gift-button {
+      min-width: min(310px, 92vw);
+      min-height: 68px;
+      border: 0;
+      border-radius: 999px;
+      padding: 18px 36px;
+      color: white;
+      cursor: pointer;
+      font-size: clamp(1.15rem, 3vw, 1.55rem);
+      font-weight: 900;
+      letter-spacing: 0;
+      background: linear-gradient(135deg, #ff2f97, #ff70bd);
+      box-shadow: 0 18px 38px rgba(180, 17, 99, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.42);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .gift-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 46px rgba(180, 17, 99, 0.34), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .gift-button:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .reveal-screen {
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.9), transparent 18%),
+        linear-gradient(135deg, #fff0f8, #ffd0e9 44%, #ffa5d2);
+    }
+
+    .reveal-content {
+      position: relative;
+      z-index: 1;
+      width: min(1120px, 100%);
+      text-align: center;
+    }
+
+    .caption {
+      margin: 0 0 26px;
+      color: #8d1454;
+      font-family: "Pacifico", cursive;
+      font-size: clamp(1.8rem, 5vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+      text-shadow: 0 3px 0 rgba(255, 255, 255, 0.74);
+    }
+
+    .photo-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(160px, 0.58fr);
+      align-items: center;
+      gap: clamp(16px, 4vw, 38px);
+      width: min(960px, 100%);
+      margin: 0 auto;
+    }
+
+    .photo {
+      display: block;
+      width: 100%;
+      max-height: min(58vh, 540px);
+      object-fit: contain;
+      border-radius: 8px;
+      filter: drop-shadow(0 20px 34px rgba(122, 16, 72, 0.24));
+    }
+
+    .face {
+      max-height: min(46vh, 390px);
+      transform: rotate(3deg);
+      filter: none;
+    }
+
+    .loading-screen {
+      color: #ffe1f2;
+      background:
+        radial-gradient(circle at 50% 115%, rgba(255, 37, 144, 0.22), transparent 32%),
+        #050205;
+    }
+
+    .loading-content {
+      width: min(780px, 100%);
+      text-align: center;
+    }
+
+    .loading-word {
+      margin: 0 0 22px;
+      color: #ff7fc1;
+      font-size: clamp(1.35rem, 4vw, 2rem);
+      font-weight: 900;
+      text-transform: lowercase;
+      text-shadow: 0 0 18px rgba(255, 64, 165, 0.8);
+    }
+
+    .bar-shell {
+      width: min(620px, 100%);
+      height: 30px;
+      margin: 0 auto 24px;
+      padding: 4px;
+      border: 2px solid rgba(255, 128, 193, 0.88);
+      border-radius: 999px;
+      background: rgba(255, 214, 236, 0.06);
+      box-shadow: 0 0 28px rgba(255, 61, 166, 0.25);
+    }
+
+    .bar-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ff2f97, #ff95cd, #ffe4f3);
+      box-shadow: 0 0 18px rgba(255, 83, 181, 0.8);
+    }
+
+    .bar-fill.loading {
+      animation: loadGift 7s linear forwards;
+    }
+
+    .love-note {
+      margin: 0 auto;
+      max-width: 680px;
+      color: #ffd7ec;
+      font-size: clamp(1.05rem, 3vw, 1.55rem);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .final-screen {
+      color: var(--white);
+      background:
+        radial-gradient(circle at 24% 18%, rgba(255, 79, 163, 0.24), transparent 22%),
+        radial-gradient(circle at 76% 86%, rgba(255, 166, 212, 0.16), transparent 25%),
+        #070306;
+    }
+
+    .final-content {
+      width: min(980px, 100%);
+      text-align: center;
+    }
+
+    .final-message {
+      margin: 0 0 24px;
+      color: #ffc1df;
+      font-family: "Pacifico", cursive;
+      font-size: clamp(1.55rem, 4.8vw, 3.3rem);
+      font-weight: 400;
+      line-height: 1.2;
+      text-shadow: 0 0 20px rgba(255, 64, 165, 0.5);
+    }
+
+    .final-image {
+      display: block;
+      width: min(680px, 100%);
+      max-height: 62vh;
+      margin: 0 auto;
+      object-fit: contain;
+      border-radius: 8px;
+      filter: drop-shadow(0 24px 42px rgba(255, 72, 171, 0.24));
+    }
+
+    .final-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .again-button,
+    .download-button {
+      display: inline-grid;
+      place-items: center;
+      min-width: min(240px, 88vw);
+      min-height: 54px;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 28px;
+      color: #260113;
+      cursor: pointer;
+      font-size: clamp(1rem, 2.6vw, 1.25rem);
+      font-weight: 900;
+      text-decoration: none;
+      background: linear-gradient(135deg, #ffc1df, #ff5bab);
+      box-shadow: 0 14px 30px rgba(255, 72, 171, 0.22), inset 0 2px 0 rgba(255, 255, 255, 0.45);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .again-button:hover,
+    .download-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px rgba(255, 72, 171, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes loadGift {
+      from {
+        width: 0;
+      }
+      to {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        overflow-y: auto;
+      }
+
+      .screen {
+        min-height: 100vh;
+        position: absolute;
+      }
+
+      .photo-row {
+        grid-template-columns: 1fr;
+      }
+
+      .photo {
+        max-height: 42vh;
+      }
+
+      .face {
+        width: min(260px, 72vw);
+        margin: 0 auto;
+        max-height: 28vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="screen intro-screen active" id="introScreen" aria-label="Inicio del regalo">
+      <div class="heart-field" id="heartField"></div>
+      <div class="sparkle-field" id="sparkleField"></div>
+      <div class="intro-content">
+        <h1>Quiero darte unos ORMOSOS tulipanes que hice para vos &lt;3</h1>
+        <button class="gift-button" id="openGift" type="button">Abrir regalo</button>
+      </div>
+    </section>
+
+    <section class="screen reveal-screen" id="revealScreen" aria-label="Primera sorpresa">
+      <div class="heart-field" id="revealHearts"></div>
+      <div class="reveal-content">
+        <p class="caption">Raioooz como llego esto aki XdXdXdX</p>
+        <div class="photo-row">
+          <img class="photo" src="tulipan1.png" alt="Tulipan sorpresa" />
+          <img class="photo face" src="cara1.png" alt="Dibujo avergonzado" />
+        </div>
+      </div>
+    </section>
+
+    <section class="screen loading-screen" id="loadingScreen" aria-label="Cargando regalo">
+      <div class="loading-content">
+        <p class="loading-word" id="loadingText">Ahora si cargando tulipanes.....</p>
+        <div class="bar-shell" aria-hidden="true">
+          <div class="bar-fill" id="barFill"></div>
+        </div>
+        <p class="love-note">Sabias que te amo mucho? No paro de pensar en vos &lt;3</p>
+      </div>
+    </section>
+
+    <section class="screen final-screen" id="finalScreen" aria-label="Regalo final">
+      <div class="final-content">
+        <p class="final-message">Ahora si mi amor, esto lo hice mientras estabas comiendo y de compras jijij t amo &lt;3</p>
+        <img class="final-image" src="tulipan2.png" alt="Tulipan final" />
+        <div class="final-actions">
+          <button class="again-button" id="againButton" type="button">Ver otra vez</button>
+          <button class="download-button" id="downloadButton" type="button">Descargar imagen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const introScreen = document.querySelector("#introScreen");
+    const revealScreen = document.querySelector("#revealScreen");
+    const loadingScreen = document.querySelector("#loadingScreen");
+    const finalScreen = document.querySelector("#finalScreen");
+    const openGift = document.querySelector("#openGift");
+    const againButton = document.querySelector("#againButton");
+    const downloadButton = document.querySelector("#downloadButton");
+    const barFill = document.querySelector("#barFill");
+    let timers = [];
+
+    const hearts = ["♡", "♥", "💗", "💖", "💕", "💘"];
+    const sparkles = ["✦", "✧", "✦", "✧"];
+
+    function fillField(container, symbols, total) {
+      const fragment = document.createDocumentFragment();
+
+      for (let index = 0; index < total; index += 1) {
+        const item = document.createElement("span");
+        item.className = symbols === sparkles ? "sparkle" : "heart";
+        item.textContent = symbols[index % symbols.length];
+        item.style.left = `${Math.random() * 98}%`;
+        item.style.top = `${Math.random() * 96}%`;
+        item.style.transform = `rotate(${Math.random() * 50 - 25}deg) scale(${0.75 + Math.random() * 0.75})`;
+        item.style.opacity = `${0.45 + Math.random() * 0.42}`;
+        fragment.appendChild(item);
+      }
+
+      container.appendChild(fragment);
+    }
+
+    function showScreen(screen) {
+      document.querySelectorAll(".screen").forEach((item) => {
+        item.classList.toggle("active", item === screen);
+      });
+    }
+
+    function clearGiftTimers() {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      timers = [];
+    }
+
+    function restartBar() {
+      barFill.classList.remove("loading");
+      void barFill.offsetWidth;
+      barFill.classList.add("loading");
+    }
+
+    function startGift() {
+      clearGiftTimers();
+      barFill.classList.remove("loading");
+      showScreen(revealScreen);
+
+      timers.push(window.setTimeout(() => {
+        showScreen(loadingScreen);
+        restartBar();
+      }, 7000));
+
+      timers.push(window.setTimeout(() => {
+        showScreen(finalScreen);
+      }, 14000));
+    }
+
+    function resetGift() {
+      clearGiftTimers();
+      barFill.classList.remove("loading");
+      showScreen(introScreen);
+    }
+
+    fillField(document.querySelector("#heartField"), hearts, 76);
+    fillField(document.querySelector("#sparkleField"), sparkles, 48);
+    fillField(document.querySelector("#revealHearts"), hearts, 38);
+
+    openGift.addEventListener("click", startGift);
+    againButton.addEventListener("click", resetGift);
+    downloadButton.addEventListener("click", async () => {
+      try {
+        const response = await fetch("tulipan2.png");
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = imageUrl;
+        link.download = "tulipanes-para-vos.png";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(imageUrl);
+      } catch {
+        window.open("tulipan2.png", "_blank");
+      }
+    });
+  </script>
+</body>
+</html>
